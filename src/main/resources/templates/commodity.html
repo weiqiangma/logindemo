@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <base th:href="${#request.getContextPath()}+'/'">
+  <title>Document</title>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+  <link rel="stylesheet" type="text/css" href="layui/css/layui.css">
+    <script type="text/javascript" src="js/jquery-11.8.0.min.js"></script>
+  <script type="text/javascript" src="layui/layui.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/vue/dist/vue.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+</head>
+<body>
+
+  <div class="site-nav-bg">
+    <div class="site-nav w1200">
+      <p class="sn-back-home">
+        <i class="layui-icon layui-icon-home"></i>
+        <a href="#">首页</a>
+      </p>
+      <div class="sn-quick-menu">
+        <div class="login"><a href="login.html">登录</a></div>
+        <div class="sp-cart"><a href="shopcart.html">购物车</a><span>2</span></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="header">
+    <div class="headerLayout w1200">
+      <div class="headerCon">
+        <h1 class="mallLogo">
+          <a href="#" title="母婴商城">
+            <img src="img/logo.png">
+          </a>
+        </h1>
+        <div class="mallSearch">
+
+            <input type="text" id="title" name="title" required  lay-verify="required" autocomplete="off" class="layui-input" placeholder="请输入需要的商品">
+            <button id="search_btn" class="layui-btn" >
+                <i class="layui-icon layui-icon-search"></i>
+            </button>
+            <input type="hidden" name="" value="">
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content content-nav-base commodity-content">
+    <div class="main-nav">
+      <div class="inner-cont0">
+        <div class="inner-cont1 w1200">
+          <div class="inner-cont2">
+            <a href="commodity.html" class="active">所有商品</a>
+            <a href="buytoday.html">今日团购</a>
+            <a href="information.html">母婴资讯</a>
+            <a href="about.html">关于我们</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="commod-cont-wrap">
+      <div class="commod-cont w1200 layui-clear">
+        <div class="left-nav">
+          <div class="title">所有分类</div>
+          <div class="list-box">
+            <dl>
+             <dt>奶粉辅食</dt>
+             <dd><a href="javascript:;">进口奶粉</a></dd>
+             <dd><a href="javascript:;">宝宝辅食</a></dd>
+             <dd><a href="javascript:;">营养品</a></dd>
+            </dl>
+            <dl>
+             <dt>儿童用品</dt>
+             <dd><a href="javascript:;">纸尿裤</a></dd>
+             <dd><a href="javascript:;">婴儿湿巾</a></dd>
+             <dd><a href="javascript:;">婴儿车</a></dd>
+             <dd><a href="javascript:;">婴儿床</a></dd>
+             <dd><a href="javascript:;">儿童安全座椅</a></dd>
+            </dl>
+            <dl>
+             <dt>儿童早教</dt>
+             <dd><a href="javascript:;">儿童玩具</a></dd>
+             <dd><a href="javascript:;">早教书籍</a></dd>
+             <dd><a href="javascript:;">孕产育儿书</a></dd>
+            </dl>
+            <dl>
+             <dt>儿童服饰</dt>
+             <dd><a href="javascript:;">童装</a></dd>
+             <dd><a href="javascript:;">童鞋</a></dd>
+             <dd><a href="javascript:;">宝宝配饰</a></dd>
+            </dl>
+            <dl>
+             <dt>孕妈专区</dt>
+             <dd><a href="javascript:;">孕妇装</a></dd>
+             <dd><a href="javascript:;">孕妇护肤</a></dd>
+             <dd><a href="javascript:;">孕妇用品</a></dd>
+            </dl>
+          </div>
+        </div>
+        <div class="right-cont-wrap">
+          <div class="right-cont">
+            <div class="sort layui-clear">
+              <a class="active" href="javascript:void(0);" event = 'volume' onclick="getListData(1,'id')">销量</a>
+              <a href="javascript:void(0);" event = 'price' onclick="getListData(1,'price')">价格</a>
+              <a href="javascript:void(0);" event = 'newprod' onclick="getListDate(1,'created')">新品</a>
+              <a href="javascript:;" event = 'collection'>收藏</a>
+            </div>
+            <div class="prod-number">
+              <span>200个</span>
+            </div>
+            <!--展示商品-->
+            <div class="cont-list layui-clear" id="list-cont">
+            </div>
+            <!--分页插件-->
+              <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                  <legend>分页导航</legend>
+              </fieldset>
+              <div id="demo1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript" src="js/jquery-11.8.0.min.js"></script>
+  <script type="text/javascript" src="layui/layui.js"></script>
+<script>
+
+    var current_page = 0;
+    var limit = 6;
+    function getListData(data,sortType){
+        var sort = sortType;
+        $.ajax({
+            url: "api/item/getAllItems",
+            data: {pageNum: data, pageSize: limit, sortProperty : sortType},
+            dataType: "json",
+            type: "GET",
+            success: function (data) {
+                var resultArray = data.result.content;
+                showResult(resultArray,'#list-cont');
+                paging(data,sort);
+            }
+        });
+    };
+
+    function showResult(resultArray,lableId){
+        var str = "";
+        for(var i = 0; i<resultArray.length;i++){
+            str  = str +
+                '<div class="item">' +
+                '<div class="img">' +
+                '<a href="javascript:;">' + '<img src="' + resultArray[i].image + '">' + '</a>' +
+                '</div>' +
+                '<div class="text">' +
+                '<p class="title">' + resultArray[i].title + '</p>' +
+                '<p class="price">' +
+                '<span class="pri"> ￥' + resultArray[i].price + '</span>' +
+                '<span class="nub">' + resultArray[i].num + '</span>' +
+                '</p>' +
+                '</div>' +
+                '</div>';
+        }
+        $(lableId).html(str);
+    };
+
+    function paging(data,sortType){
+        /*分页*/
+        layui.use('laypage', function(){
+            var laypage = layui.laypage;
+            //执行一个laypage实例
+            laypage.render({
+                elem: 'demo1' //注意，这里的 test1 是 ID，不用加 # 号
+                ,count: data.result.totalElements //数据总数，从服务端得到
+                ,limit: data.result.size //每页展示多少条数据
+                ,curr: current_page
+                ,jump: function(obj, first){
+                    current_page = obj.curr;
+                    if(!first){
+                        getListData(current_page, sortType);
+                    }
+                }
+            });
+        });
+    };
+
+
+    $('#search_btn').click(function () {
+        var title = $('#title').val();
+        alert(title);
+        $.ajax({
+            url:"api/item/getItemsByKeyWorld",
+            data:{title : title,pageNum : "1",pageSize : "10"},
+            dataType:"json",
+            type:"GET",
+            success:function (data) {
+                var resultArray = data.result.content;
+                var str = "";
+                for(var i = 0; i<resultArray.length;i++){
+                    str  = str +
+                        '<div class="item">' +
+                        '<div class="img">' +
+                        '<a href="javascript:;">' + '<img src="' + resultArray[i].image + '">' + '</a>' +
+                        '</div>' +
+                        '<div class="text">' +
+                        '<p class="title">' + resultArray[i].title + '</p>' +
+                        '<p class="price">' +
+                        '<span class="pri"> ￥' + resultArray[i].price + '</span>' +
+                        '<span class="nub">' + resultArray[i].num + '</span>' +
+                        '</p>' +
+                        '</div>' +
+                        '</div>';
+                }
+                $('#list-cont').html(str);
+            }
+        })
+    });
+
+  /*商品展示*/
+  $(document).ready(function () {
+    getListData(1,"id");
+  });
+
+/*  layui.use(['laypage', 'layer'], function(){
+      var laypage = layui.laypage,layer = layui.layer;
+
+      laypage({
+          cont: 'demo1'
+          ,pages: 100 //总页数
+          ,groups: 5 //连续显示分页数
+      });
+  });*/
+
+  layui.config({
+    base: 'js/' //你存放新模块的目录，注意，不是layui的模块目录
+  }).use(['mm','laypage','jquery'],function(){
+      var laypage = layui.laypage,$ = layui.$,
+     mm = layui.mm;
+       laypage.render({
+        elem: 'demo0'
+        ,count: 100 //数据总数
+      });
+      });
+
+    $('.sort a').on('click',function(){
+      $(this).addClass('active').siblings().removeClass('active');
+    })
+    $('.list-box dt').on('click',function(){
+      if($(this).attr('off')){
+        $(this).removeClass('active').siblings('dd').show()
+        $(this).attr('off','')
+      }else{
+        $(this).addClass('active').siblings('dd').hide()
+        $(this).attr('off',true)
+      }
+});
+</script>
+</body>
+</html>

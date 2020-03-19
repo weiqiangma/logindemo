@@ -1,0 +1,38 @@
+
+
+#配置数据源
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/malogindemo?useUnicode=true&characterEncoding=utf8&useOldAliasMetadataBehavior=true&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=UTC
+    username: mwq
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+  redis:
+    database: 0
+    host: 192.168.1.200
+    port: 6379
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+        cluster-nodes: 127.0.0.1:9300
+        cluster-name: elasticsearch
+
+#打印sql语句
+logging:
+  level:
+    root: info
+    com.exampl.logindemo.mapper : debug
+
+mybatis-plus:
+  #mapper-locations: classpath:mapper/*Mapper.xml
+  #批量配置别名
+  type-aliases-package: com.example.logindemo.pojo
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+server:
+  port: 8083
+  servlet:
+    context-path: /logindemo
+
